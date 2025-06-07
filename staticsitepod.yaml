@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness-and-readiness-probes
+  name: static-site
+spec:
+  containers:
+    - name: caddy
+      image: gokulakrishnanr/cloud-k8s:latest
+      ports:
+        - containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      livenessProbe:
+        httpGet:
+          path: /
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 10
+      startupProbe:
+        httpGet:
+          path: /
+          port: 8080
+        failureThreshold: 30
+        periodSeconds: 10
+  imagePullSecrets:
+    - name: regcred
