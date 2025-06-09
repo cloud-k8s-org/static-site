@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_REPO = 'gokulakrishnanr/cloud-k8s'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -27,7 +31,7 @@ pipeline {
                      withCredentials([usernamePassword(credentialsId: 'docker-credential', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
                         sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
                     }
-                    sh "docker buildx build --platform linux/amd64,linux/arm64 -t ${DOCKER_REPO}:${LATEST_TAG} --push ."
+                    sh "docker buildx build --platform linux/amd64,linux/arm64 -t ${DOCKER_REPO}:latest --push ."
                 }
             }
         }
@@ -35,12 +39,6 @@ pipeline {
     post {
         always {
             cleanWs()
-        }
-        success {
-            echo 'Commit message follows Conventional Commit format'
-        }
-        failure {
-            echo 'Commit message does not follow Conventional Commit format'
         }
     }
 }
